@@ -3,7 +3,7 @@ import BlogList from "./Components/BlogList";
 export default function Home() {
   return (
     <div>
-      <BlogList />
+      BlogList
     </div>
   );
 }
