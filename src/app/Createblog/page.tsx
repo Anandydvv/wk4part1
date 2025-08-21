@@ -1,8 +1,9 @@
+// src/app/Createblog/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../Components/Navbar';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 type Blog = {
   id: number;
@@ -13,13 +14,13 @@ type Blog = {
   imageUrl: string;
 };
 
-const Createblog = () => {
+const Createblog: React.FC = () => {
   const [author, setAuthor] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
-  // Safe read from localStorage with fallback
+  // Safe initial load from localStorage (client-only)
   const initialBlogs: Blog[] =
     typeof window !== 'undefined'
       ? (JSON.parse(localStorage.getItem('myData') ?? '[]') as Blog[])
@@ -28,12 +29,13 @@ const Createblog = () => {
   const [data, setData] = useState<Blog[]>(initialBlogs);
 
   useEffect(() => {
+    // Persist whenever data changes
     localStorage.setItem('myData', JSON.stringify(data));
   }, [data]);
 
   const addData = () => {
     const currentDate = new Date().toLocaleDateString();
-    const newData: Blog = {
+    const newItem: Blog = {
       id: data.length + 1,
       author,
       date: currentDate,
@@ -41,17 +43,71 @@ const Createblog = () => {
       description,
       imageUrl,
     };
-    setData(prev => [...prev, newData]);
+    setData(prev => [...prev, newItem]);
     setAuthor('');
     setTitle('');
     setDescription('');
     setImageUrl('');
+    // Optional: give quick feedback
+    alert('Blog saved locally ✅');
   };
 
   return (
     <div>
       <Navbar />
-      {/* ...rest of your JSX unchanged... */}
+
+      {/* Push content below fixed-top navbar */}
+      <main className="container bg-light" style={{ marginTop: '5rem', paddingBottom: '2rem' }}>
+        <h2 className="mb-3 pt-3">Create new blog</h2>
+
+        <div className="row">
+          <div className="col-md-8 col-lg-6">
+            <div className="mb-2">
+              <label className="form-label">Author</label>
+              <input
+                type="text"
+                className="form-control"
+                value={author}
+                onChange={e => setAuthor(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-2">
+              <label className="form-label">Title</label>
+              <input
+                type="text"
+                className="form-control"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-2">
+              <label className="form-label">Description</label>
+              <textarea
+                className="form-control"
+                rows={5}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Image URL</label>
+              <input
+                type="text"
+                className="form-control"
+                value={imageUrl}
+                onChange={e => setImageUrl(e.target.value)}
+              />
+            </div>
+
+            <button type="button" onClick={addData} className="btn btn-primary">
+              Add Data
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
